@@ -1,0 +1,16 @@
+.report-fab {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.report-fab:hover {
+  transform: scale(1.15);
+}

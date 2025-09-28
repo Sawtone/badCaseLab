@@ -19,7 +19,7 @@ const Home = () => {
         </ul>
         <li><strong>运行时 - 渲染</strong></li>
         <ul>
-          <li><a href="/lab?scenario=S04_SlowList">S04 - To C: 无尽信息流 (列表暴力渲染)</a></li>
+          <li><a href="/lab?scenario=S04">S04 - To C: 无尽信息流 (列表暴力渲染)</a></li>
           <li><a href="/lab?scenario=S05_DataGrid">S05 - To B: 巨型数据网格</a></li>
           <li><a href="/lab?scenario=S06_InvalidRender">S06 - 全局: 连锁的无效渲染</a></li>
         </ul>

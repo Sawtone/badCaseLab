@@ -1,26 +1,60 @@
-import React, { Suspense, useMemo } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-// 动态加载组件
-const loadScenario = (scenarioId) => {
-  if (!scenarioId) return null;
-  // React.lazy 接受一个返回 Promise 的函数
-  // 这个 Promise 应该 resolve 一个包含 default export 的模块
-  return React.lazy(() => import(`../scenarios/${scenarioId}/index.jsx`));
-};
+import ReportDrawer from '../components/ReportDrawer/ReportDrawer';
+import AuditReport from '../components/AuditReport/AuditReport';
+import LabControl from '../components/LabControl/LabControl';
+
 
 const Lab = () => {
   const [searchParams] = useSearchParams();
   const scenarioId = searchParams.get('scenario');
+  const view = searchParams.get('view') || 'problem';
 
-  // 使用 useMemo 防止每次渲染都重新调用 loadScenario
-  const ScenarioComponent = useMemo(() => loadScenario(scenarioId), [scenarioId]);
+  // 使用 state 来存储动态加载的组件和数据
+  const [resources, setResources] = useState({
+    Problem: null,
+    Solved: null,
+    reportData: null,
+  });
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
-  if (!ScenarioComponent) {
+  useEffect(() => {
+    if (!scenarioId) return;  
+
+    // 重置状态以显示加载中
+    setResources({ Problem: null, Solved: null, reportData: null });
+
+    const loadResources = async () => {
+      try {
+        // React.lazy 接受一个返回 Promise 的函数
+        // 这个 Promise 应该 resolve 一个包含 default export 的模块
+        const ProblemComponent = React.lazy(() => import(`../scenarios/${scenarioId}/Problem.jsx`));
+        
+        const SolvedComponent = React.lazy(() => 
+          import(`../scenarios/${scenarioId}/Solved.jsx`)
+          .catch(() => ({ default: null }))
+        );
+        
+        const reportDataModule = await import(`../scenarios/${scenarioId}/reportData.js`);
+
+        setResources({
+          Problem: ProblemComponent,
+          Solved: SolvedComponent,
+          reportData: reportDataModule.default,
+        });
+      } catch (error) {
+        console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
+      }
+    };
+
+    loadResources();
+  }, [scenarioId]);
+
+  if (!scenarioId) {
     return (
-      <div>
-        <h2>请提供一个场景ID</h2>
-        <p>例如: <a href="/lab?scenario=S04_SlowList">/lab?scenario=S04_SlowList</a></p>
+      <div style={{ padding: '20px' }}>
+        <h2>请在主页选择一个场景</h2>
         <a href="/">返回主菜单</a>
       </div>
     );
@@ -28,12 +62,28 @@ const Lab = () => {
 
   return (
     <div>
-      <a href="/" style={{ marginBottom: '20px', display: 'inline-block' }}>&larr; 返回主菜单</a>
-      <hr />
-      {/* Suspense 用于处理懒加载组件时的等待状态 */}
-      <Suspense fallback={<div>正在加载场景: {scenarioId}...</div>}>
-        <ScenarioComponent />
+      {/* 唯一的 Suspense 用于处理所有动态加载的场景组件 */}
+      <Suspense fallback={<div style={{ padding: '20px', fontSize: '24px' }}>加载场景中...</div>}>
+        {view === 'problem' && resources.Problem && <resources.Problem />}
+        {view === 'solved' && resources.Solved && <resources.Solved />}
       </Suspense>
+
+      {/* 仅在资源加载后显示统一的UI控件 */}
+      {resources.Problem && (
+        <LabControl
+            scenarioId={scenarioId}
+            currentView={view}
+            hasSolvedVersion={!!resources.Solved}
+            onToggleReport={() => setIsReportOpen(true)}
+        />
+      )}
+
+      {/* 报告抽屉 */}
+      {resources.reportData && (
+        <ReportDrawer isOpen={isReportOpen} onClose={() => setIsReportOpen(false)}>
+          <AuditReport {...resources.reportData} />
+        </ReportDrawer>
+      )}
     </div>
   );
 };

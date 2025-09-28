@@ -1,0 +1,53 @@
+.list-item-container {
+    display: flex;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+  }
+  
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .name {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  
+  .text {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+  }
+  
+  .content-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .action-button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+  
+  .action-button:hover {
+    background-color: #f1f1f1;
+  }

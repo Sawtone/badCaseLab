@@ -1,0 +1,67 @@
+/* 全局和根布局 */
+body {
+    background-color: #f0f2f5;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+  }
+  
+  .app-container {
+    padding-top: 55px;
+  }
+  
+  .main-content-area {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  /* 顶部导航栏 Header */
+  .app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 55px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+  }
+  .logo { font-weight: bold; font-size: 24px; color: #1877f2; }
+  .main-nav { margin: 0 auto; }
+  .main-nav a { margin: 0 15px; text-decoration: none; color: #333; }
+  
+  /* 左右侧边栏 */
+  .left-sidebar, .right-sidebar {
+    flex-shrink: 0;
+    width: 280px;
+    margin: 0 20px;
+  }
+  .left-sidebar .profile-card, .right-sidebar .module {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  .sidebar-nav a { display: block; padding: 10px 0; text-decoration: none; color: #333; }
+  
+  /* 中间主内容区 */
+  .content-feed {
+    width: 100%;
+    max-width: 680px;
+  }
+  
+  /* 列表容器样式调整 */
+  .content-feed ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+  }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useTransition } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import ReportDrawer from '../components/ReportDrawer/ReportDrawer';
@@ -18,7 +18,9 @@ const Lab = () => {
     reportData: null,
   });
   const [isReportOpen, setIsReportOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // 返回一个 pending 状态和一个启动过渡的函数
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!scenarioId) return;  
@@ -28,7 +30,6 @@ const Lab = () => {
 
     const loadResources = async () => {
       try {
-        setIsLoading(true);
         // React.lazy 接受一个返回 Promise 的函数
         // 这个 Promise 应该 resolve 一个包含 default export 的模块
         const ProblemComponent = React.lazy(() => import(`../scenarios/${scenarioId}/Problem.jsx`));
@@ -40,15 +41,16 @@ const Lab = () => {
         
         const reportDataModule = await import(`../scenarios/${scenarioId}/reportData.js`);
 
-        setResources({
-          Problem: ProblemComponent,
-          Solved: SolvedComponent,
-          reportData: reportDataModule.default,
+        // 将 reportData 的更新包裹在 startTransition 中，React 会设置 isPending为true 并更新 UI，然后再在后台执行这里的更新
+        startTransition(() => {
+          setResources({
+            Problem: ProblemComponent,
+            Solved: SolvedComponent,
+            reportData: reportDataModule.default,
+          });
         });
       } catch (error) {
         console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -82,7 +84,7 @@ const Lab = () => {
             currentView={view}
             hasSolvedVersion={!!resources.Solved}
             onToggleReport={() => setIsReportOpen(true)}
-            isLoading={isLoading}
+            isLoading={isPending}
         />
       )}
 

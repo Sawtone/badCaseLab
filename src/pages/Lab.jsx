@@ -18,6 +18,7 @@ const Lab = () => {
     reportData: null,
   });
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!scenarioId) return;  
@@ -27,6 +28,7 @@ const Lab = () => {
 
     const loadResources = async () => {
       try {
+        setIsLoading(true);
         // React.lazy 接受一个返回 Promise 的函数
         // 这个 Promise 应该 resolve 一个包含 default export 的模块
         const ProblemComponent = React.lazy(() => import(`../scenarios/${scenarioId}/Problem.jsx`));
@@ -45,11 +47,13 @@ const Lab = () => {
         });
       } catch (error) {
         console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadResources();
-  }, [scenarioId]);
+  }, [scenarioId, view]);
 
   if (!scenarioId) {
     return (
@@ -78,6 +82,7 @@ const Lab = () => {
             currentView={view}
             hasSolvedVersion={!!resources.Solved}
             onToggleReport={() => setIsReportOpen(true)}
+            isLoading={isLoading}
         />
       )}
 

@@ -3,7 +3,7 @@ import ModeSwitcher from './ModeSwitcher';
 import ReportButton from './ReportButton';
 import './LabControl.css';
 
-const LabControl = ({ scenarioId, currentView, hasSolvedVersion, onToggleReport }) => {
+const LabControl = ({ scenarioId, currentView, hasSolvedVersion, onToggleReport, isLoading }) => {
   const containerRef = useRef(null);
 
   // 跟踪鼠标
@@ -28,8 +28,10 @@ const LabControl = ({ scenarioId, currentView, hasSolvedVersion, onToggleReport 
     };
   }, []);
 
+  const containerClassName = `aurora-container ${isLoading ? 'is-loading' : ''}`;
+
   return (
-    <div className="aurora-container">
+    <div className={containerClassName}>
       <div className="aurora-container-inner" ref={containerRef}>
         
         <div className="aurora-background">

@@ -100,3 +100,31 @@
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 1px;
 }
+
+/* 轨道辉光 */
+.is-loading .slider-track::after {
+    opacity: 1;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+/* 脉动阴影 */
+.is-loading.aurora-container {
+    animation: pulse-shadow 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-shadow {
+    0%, 100% {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), 
+                    0 30px 60px -10px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 
+                    0 35px 70px -10px rgba(8, 145, 255, 0.2);
+    }
+}

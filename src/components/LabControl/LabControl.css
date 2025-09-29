@@ -1,28 +1,102 @@
-/* 悬浮控制模块的容器 */
-.lab-control-container {
+.aurora-container {
     position: fixed;
     bottom: 24px;
     left: 24px;
     z-index: 999;
     
+    border-radius: 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), 
+                0 30px 60px -10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+.aurora-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 
+                0 30px 60px -10px rgba(0, 0, 0, 0.15);
+}
+
+.aurora-container-inner {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
+    gap: 8px;
+    padding: 8px;
     
-    /* 毛玻璃效果 */
-    background: rgba(255, 255, 255, 0.6); /* 半透明背景 */
-    backdrop-filter: blur(10px); /* 模糊滤镜 */
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(42, 42, 46, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     
-    border-radius: 99px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .lab-control-container:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  }
+    border-radius: inherit;
+    overflow: hidden;
+}
+
+.aurora-background {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1;
+    opacity: 0.3;
+    filter: blur(50px);
+}
+
+.aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.aurora-blob:nth-child(1) {
+    background: #2a8af6;
+    width: 120px; height: 120px;
+    top: -20%; left: 60%;
+    animation: move-aurora-1 15s ease-in-out infinite alternate;
+}
+
+.aurora-blob:nth-child(2) {
+    background: #f04393;
+    width: 150px; height: 150px;
+    top: 40%; left: -10%;
+    animation: move-aurora-2 20s ease-in-out infinite alternate;
+}
+
+.aurora-blob:nth-child(3) {
+    background: #a33af3;
+    width: 100px; height: 100px;
+    top: 50%; left: 50%;
+    animation: move-aurora-3 18s ease-in-out infinite alternate;
+}
+
+@keyframes move-aurora-1 {
+    to { transform: translate(-50px, 80px) rotate(180deg) scale(1.2); }
+}
+@keyframes move-aurora-2 {
+    to { transform: translate(120px, -50px) rotate(90deg) scale(0.8); }
+}
+@keyframes move-aurora-3 {
+    to { transform: translate(30px, 60px) rotate(-120deg) scale(1.5); }
+}
+
+.aurora-container-inner::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(
+        circle 150px at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 1),
+        transparent 80%
+    );
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 2;
+    mix-blend-mode: screen; 
+}
+
+.aurora-container:hover .aurora-container-inner::after {
+    opacity: 0.1;
+}
+
+.separator {
+    width: 1px;
+    height: 24px;
+    z-index: 3;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 1px;
+}

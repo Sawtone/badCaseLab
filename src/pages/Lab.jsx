@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, useTransition } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import ReportDrawer from '../components/ReportDrawer/ReportDrawer';
@@ -19,11 +19,12 @@ const Lab = () => {
   });
   const [isReportOpen, setIsReportOpen] = useState(false);
 
-  // 返回一个 pending 状态和一个启动过渡的函数
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!scenarioId) return;  
+
+    setIsLoading(true);
 
     // 重置状态以显示加载中
     setResources({ Problem: null, Solved: null, reportData: null });
@@ -41,16 +42,14 @@ const Lab = () => {
         
         const reportDataModule = await import(`../scenarios/${scenarioId}/reportData.js`);
 
-        // 将 reportData 的更新包裹在 startTransition 中，React 会设置 isPending为true 并更新 UI，然后再在后台执行这里的更新
-        startTransition(() => {
-          setResources({
-            Problem: ProblemComponent,
-            Solved: SolvedComponent,
-            reportData: reportDataModule.default,
-          });
+        setResources({
+          Problem: ProblemComponent,
+          Solved: SolvedComponent,
+          reportData: reportDataModule.default,
         });
       } catch (error) {
         console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
+        setIsLoading(false)
       }
     };
 
@@ -73,18 +72,20 @@ const Lab = () => {
     }}>
       {/* 唯一的 Suspense 用于处理所有动态加载的场景组件 */}
       <Suspense fallback={<div style={{ padding: '20px', fontSize: '24px' }}>加载场景中...</div>}>
-        {view === 'problem' && resources.Problem && <resources.Problem />}
+        {view === 'problem' && resources.Problem && 
+          <resources.Problem onRenderComplete={() => setIsLoading(false)}/>
+        }
         {view === 'solved' && resources.Solved && <resources.Solved />}
       </Suspense>
 
       {/* 仅在资源加载后显示统一的UI控件 */}
-      {resources.Problem && (
+      {(isLoading || resources.reportData) && (
         <LabControl
             scenarioId={scenarioId}
             currentView={view}
             hasSolvedVersion={!!resources.Solved}
             onToggleReport={() => setIsReportOpen(true)}
-            isLoading={isPending}
+            isLoading={isLoading}
         />
       )}
 

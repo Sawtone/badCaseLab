@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { faker } from '@faker-js/faker';
 import ListItem from './ListItem';
 import './ListItem.css';
@@ -20,9 +20,15 @@ const generateMockData = () => {
   }));
 };
 
-const Problem = () => {
+const Problem = ({ onRenderComplete }) => {
   // 使用 useMemo 来确保虚拟数据只生成一次
   const mockData = useMemo(() => generateMockData(), []);
+
+  useEffect(() => {
+    if (onRenderComplete) {
+      onRenderComplete();
+    }
+  }, []);
 
   return (
     <SocialMediaLayout>

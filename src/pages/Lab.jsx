@@ -53,7 +53,8 @@ const Lab = () => {
       }
     };
 
-    loadResources();
+    const timerId = setTimeout(loadResources, 0);
+    return () => clearTimeout(timerId);
   }, [scenarioId, view]);
 
   if (!scenarioId) {

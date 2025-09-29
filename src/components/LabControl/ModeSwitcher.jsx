@@ -1,24 +1,32 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './ModeSwitcher.css';
 
 const ModeSwitcher = ({ scenarioId, currentView, hasSolvedVersion }) => {
+  const navigate = useNavigate();
   const location = useLocation();
 
-  if (!hasSolvedVersion) return null;
+  if (!hasSolvedVersion) {
+    return null;
+  }
 
-  const problemLink = `${location.pathname}?scenario=${scenarioId}&view=problem`;
-  const solvedLink = `${location.pathname}?scenario=${scenarioId}&view=solved`;
+  const handleToggle = (e) => {
+    const nextView = e.target.checked ? 'solved' : 'problem';
+    navigate(`${location.pathname}?scenario=${scenarioId}&view=${nextView}`);
+  };
 
   return (
-    <div className="mode-switcher">
-      <Link to={problemLink} className={currentView === 'problem' ? 'active' : ''}>
-        Problem
-      </Link>
-      <Link to={solvedLink} className={currentView === 'solved' ? 'active' : ''}>
-        Solved
-      </Link>
-    </div>
+    <label className="switcher">
+      <input 
+        type="checkbox"
+        checked={currentView === 'solved'}
+        onChange={handleToggle}
+      />
+      <span className="slider-track">
+        <span className="label-problem">BadCase</span>
+        <span className="label-solved">Solved</span>
+      </span>
+    </label>
   );
 };
 

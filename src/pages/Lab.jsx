@@ -61,7 +61,10 @@ const Lab = () => {
   }
 
   return (
-    <div>
+    <div style={{ 
+      background: 'radial-gradient(circle at center, #fdfdfd 0%, #f7f7f7 100%)',
+      minHeight: '100vh'
+    }}>
       {/* 唯一的 Suspense 用于处理所有动态加载的场景组件 */}
       <Suspense fallback={<div style={{ padding: '20px', fontSize: '24px' }}>加载场景中...</div>}>
         {view === 'problem' && resources.Problem && <resources.Problem />}

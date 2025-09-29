@@ -26,20 +26,13 @@ const Problem = ({ onRenderComplete }) => {
 
   useEffect(() => {
     if (onRenderComplete) {
-      // 请求在下一个动画帧执行
-      const firstFrame = requestAnimationFrame(() => {
-        // 在第一个动画帧里，再次请求在下一个动画帧执行
-        // 此时可以确保浏览器已经完成了之前的阻塞性渲染任务
-        const secondFrame = requestAnimationFrame(() => {
-          onRenderComplete();
-        });
+      // 设置一个短暂的延迟,把 onRenderComplete() 的执行推迟到浏览器完成所有高优先级的渲染任务之后
+      const timerId = setTimeout(() => {
+        onRenderComplete();
+      }, 100);
 
-        // 返回一个清理函数，以防在第二个 rAF 执行前组件被卸载
-        return () => cancelAnimationFrame(secondFrame);
-      });
-
-      // 返回一个清理函数，以防在第一个 rAF 执行前组件被卸载
-      return () => cancelAnimationFrame(firstFrame);
+      // 返回一个清理函数，以防组件在 timeout 执行前被卸载
+      return () => clearTimeout(timerId);
     }
   }, [onRenderComplete]);
 

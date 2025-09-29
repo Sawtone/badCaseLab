@@ -26,9 +26,22 @@ const Problem = ({ onRenderComplete }) => {
 
   useEffect(() => {
     if (onRenderComplete) {
-      onRenderComplete();
+      // 请求在下一个动画帧执行
+      const firstFrame = requestAnimationFrame(() => {
+        // 在第一个动画帧里，再次请求在下一个动画帧执行
+        // 此时可以确保浏览器已经完成了之前的阻塞性渲染任务
+        const secondFrame = requestAnimationFrame(() => {
+          onRenderComplete();
+        });
+
+        // 返回一个清理函数，以防在第二个 rAF 执行前组件被卸载
+        return () => cancelAnimationFrame(secondFrame);
+      });
+
+      // 返回一个清理函数，以防在第一个 rAF 执行前组件被卸载
+      return () => cancelAnimationFrame(firstFrame);
     }
-  }, []);
+  }, [onRenderComplete]);
 
   return (
     <SocialMediaLayout>

@@ -3,7 +3,7 @@ import './ReportButton.css';
 
 const ReportButton = ({ onClick }) => {
   return (
-    <button className="report-fab" onClick={onClick}>
+    <button className="report-button" aria-label="Show Report" onClick={onClick}>
       📊
     </button>
   );

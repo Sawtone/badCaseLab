@@ -2,9 +2,9 @@ import React from 'react';
 import './ListItem.css';
 
 // 独立的列表展示组件
-const ListItem = React.forwardRef(({ avatar, name, contentText, contentImage }, ref) => {
+const ListItem = ({ avatar, name, contentText, contentImage }) => {
   return (
-    <li className="list-item-container" ref={ref}>
+    <li className="list-item-container">
       <img className="avatar" src={avatar} alt="User avatar" />
       <div className="content">
         <strong className="name">{name}</strong>
@@ -16,6 +16,6 @@ const ListItem = React.forwardRef(({ avatar, name, contentText, contentImage }, 
       </div>
     </li>
   );
-});
+};
 
 export default ListItem;

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { faker } from '@faker-js/faker';
 import ListItem from './ListItem';
 import './ListItem.css';
@@ -20,39 +20,10 @@ const generateMockData = () => {
   }));
 };
 
-const Problem = ({ onRenderComplete }) => {
+const Problem = () => {
   // 使用 useMemo 来确保虚拟数据只生成一次
   const mockData = useMemo(() => generateMockData(), []);
 
-  const lastElementRef = useRef(null);
-
-  useEffect(() => {
-    if (typeof onRenderComplete !== 'function' || !lastElementRef.current) {
-      return;
-    }
-
-    // 当目标元素进入视口时，执行回调
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // entries[0].isIntersecting 意味着目标元素至少有1像素在视口内
-        if (entries[0].isIntersecting) {
-          // 成功观察到最后一个元素，证明浏览器已完成布局
-          onRenderComplete();
-          observer.disconnect();
-        }
-      },
-      {
-        // root: null 表示相对于浏览器视口
-        // threshold: 0 表示元素刚出现1像素就触发
-        root: null,
-        threshold: 0,
-      }
-    );
-
-    observer.observe(lastElementRef.current);
-    return () => observer.disconnect();
-    
-  }, [onRenderComplete]);
 
   return (
     <SocialMediaLayout>
@@ -63,10 +34,9 @@ const Problem = ({ onRenderComplete }) => {
       </div>
       
       <ul>
-        {mockData.map((item, index) => (
+        {mockData.map(item => (
           <ListItem
             key={item.id}
-            ref={index === mockData.length - 1 ? lastElementRef : null}
             avatar={item.avatar}
             name={item.name}
             contentText={item.contentText}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import ReportDrawer from '../components/ReportDrawer/ReportDrawer';
@@ -20,6 +20,24 @@ const Lab = () => {
   const [isReportOpen, setIsReportOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const workerRef = useRef(null);
+
+  useEffect(() => {
+    const worker = new Worker('/responsiveness-worker.js');
+    workerRef.current = worker;
+
+    // 设置消息监听器，等待来自 Worker 的“主线程已空闲”信号
+    worker.onmessage = (event) => {
+      if (event.data === 'MAIN_THREAD_IS_FREE') {
+        setIsLoading(false);
+      }
+    };
+
+    return () => {
+      worker.terminate();
+    };
+  }, []);
 
   useEffect(() => {
     if (!scenarioId) return;  
@@ -47,14 +65,20 @@ const Lab = () => {
           Solved: SolvedComponent,
           reportData: reportDataModule.default,
         });
+
+        if (view === 'problem' && workerRef.current) {
+          workerRef.current.postMessage('CHECK_RESPONSIVENESS');
+        } else {
+          // 如果是切换到没有阻塞的 Solved 页面，我们自己关闭辉光
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
         setIsLoading(false)
       }
     };
 
-    const timerId = setTimeout(loadResources, 0);
-    return () => clearTimeout(timerId);
+    loadResources();
   }, [scenarioId, view]);
 
   if (!scenarioId) {
@@ -73,8 +97,7 @@ const Lab = () => {
     }}>
       {/* 唯一的 Suspense 用于处理所有动态加载的场景组件 */}
       <Suspense fallback={<div style={{ padding: '20px', fontSize: '24px' }}>加载场景中...</div>}>
-        {view === 'problem' && resources.Problem && 
-          <resources.Problem onRenderComplete={() => setIsLoading(false)}/>
+        {view === 'problem' && resources.Problem && <resources.Problem />
         }
         {view === 'solved' && resources.Solved && <resources.Solved />}
       </Suspense>

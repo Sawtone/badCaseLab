@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { faker } from '@faker-js/faker';
 import ListItem from './ListItem';
 import './ListItem.css';
@@ -24,16 +24,34 @@ const Problem = ({ onRenderComplete }) => {
   // 使用 useMemo 来确保虚拟数据只生成一次
   const mockData = useMemo(() => generateMockData(), []);
 
-  useEffect(() => {
-    if (onRenderComplete) {
-      // 设置一个短暂的延迟,把 onRenderComplete() 的执行推迟到浏览器完成所有高优先级的渲染任务之后
-      const timerId = setTimeout(() => {
-        onRenderComplete();
-      }, 100);
+  const lastElementRef = useRef(null);
 
-      // 返回一个清理函数，以防组件在 timeout 执行前被卸载
-      return () => clearTimeout(timerId);
+  useEffect(() => {
+    if (typeof onRenderComplete !== 'function' || !lastElementRef.current) {
+      return;
     }
+
+    // 当目标元素进入视口时，执行回调
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // entries[0].isIntersecting 意味着目标元素至少有1像素在视口内
+        if (entries[0].isIntersecting) {
+          // 成功观察到最后一个元素，证明浏览器已完成布局
+          onRenderComplete();
+          observer.disconnect();
+        }
+      },
+      {
+        // root: null 表示相对于浏览器视口
+        // threshold: 0 表示元素刚出现1像素就触发
+        root: null,
+        threshold: 0,
+      }
+    );
+
+    observer.observe(lastElementRef.current);
+    return () => observer.disconnect();
+    
   }, [onRenderComplete]);
 
   return (
@@ -45,9 +63,10 @@ const Problem = ({ onRenderComplete }) => {
       </div>
       
       <ul>
-        {mockData.map(item => (
+        {mockData.map((item, index) => (
           <ListItem
             key={item.id}
+            ref={index === mockData.length - 1 ? lastElementRef : null}
             avatar={item.avatar}
             name={item.name}
             contentText={item.contentText}

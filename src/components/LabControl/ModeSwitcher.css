@@ -30,17 +30,17 @@
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
   background: linear-gradient(
-      100deg,
-      rgba(255, 255, 255, 0) 20%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0) 80%
+    100deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 80%
   );
   transform: translateX(-100%);
   opacity: 0;
+  /* 注意：当动画生效时，此 transition 会被覆盖 */
   transition: opacity 0.3s;
   z-index: 1;
 }
-
 
 .slider-track:before {
   position: absolute;
@@ -95,3 +95,20 @@ input:checked + .slider-track:before {
 .switcher input:not(:checked) ~ .slider-track .label-solved { opacity: 0; transform: translateX(20px); }
 .switcher input:checked ~ .slider-track .label-problem { opacity: 0; transform: translateX(-20px); }
 .switcher input:checked ~ .slider-track .label-solved { opacity: 1; transform: translateX(0); }
+
+.switcher.is-glowing .slider-track::after {
+  opacity: 1;
+  animation: switcher-glow-sheen 1.2s ease-out infinite;
+}
+
+@keyframes switcher-glow-sheen {
+  0% {
+    transform: translateX(-100%);
+  }
+  60% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

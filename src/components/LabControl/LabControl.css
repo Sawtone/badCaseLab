@@ -112,19 +112,3 @@
         transform: translateX(100%);
     }
 }
-
-/* 脉动阴影 */
-.is-loading.aurora-container {
-    animation: pulse-shadow 2.5s ease-in-out infinite;
-}
-
-@keyframes pulse-shadow {
-    0%, 100% {
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), 
-                    0 30px 60px -10px rgba(0, 0, 0, 0.1);
-    }
-    50% {
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 
-                    0 35px 70px -10px rgba(8, 145, 255, 0.2);
-    }
-}

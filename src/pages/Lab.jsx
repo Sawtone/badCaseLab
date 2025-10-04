@@ -18,17 +18,19 @@ const Lab = () => {
     reportData: null,
   });
   const [isReportOpen, setIsReportOpen] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!scenarioId) return;  
+
+    setIsLoading(true);
 
     // 重置状态以显示加载中
     setResources({ Problem: null, Solved: null, reportData: null });
 
     const loadResources = async () => {
       try {
-        setIsLoading(true);
         // React.lazy 接受一个返回 Promise 的函数
         // 这个 Promise 应该 resolve 一个包含 default export 的模块
         const ProblemComponent = React.lazy(() => import(`../scenarios/${scenarioId}/Problem.jsx`));
@@ -45,15 +47,16 @@ const Lab = () => {
           Solved: SolvedComponent,
           reportData: reportDataModule.default,
         });
+        setIsLoading(false);
+
       } catch (error) {
         console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
-      } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     };
 
     loadResources();
-  }, [scenarioId, view]);
+  }, [scenarioId]);
 
   if (!scenarioId) {
     return (
@@ -71,12 +74,13 @@ const Lab = () => {
     }}>
       {/* 唯一的 Suspense 用于处理所有动态加载的场景组件 */}
       <Suspense fallback={<div style={{ padding: '20px', fontSize: '24px' }}>加载场景中...</div>}>
-        {view === 'problem' && resources.Problem && <resources.Problem />}
+        {view === 'problem' && resources.Problem && <resources.Problem />
+        }
         {view === 'solved' && resources.Solved && <resources.Solved />}
       </Suspense>
 
       {/* 仅在资源加载后显示统一的UI控件 */}
-      {resources.Problem && (
+      {(isLoading || resources.reportData) && (
         <LabControl
             scenarioId={scenarioId}
             currentView={view}

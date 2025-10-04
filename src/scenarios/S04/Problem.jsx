@@ -24,6 +24,7 @@ const Problem = () => {
   // 使用 useMemo 来确保虚拟数据只生成一次
   const mockData = useMemo(() => generateMockData(), []);
 
+
   return (
     <SocialMediaLayout>
       <div style={{ backgroundColor: '#fff', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>

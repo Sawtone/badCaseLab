@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import ReportDrawer from '../components/ReportDrawer/ReportDrawer';
@@ -20,24 +20,6 @@ const Lab = () => {
   const [isReportOpen, setIsReportOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const workerRef = useRef(null);
-
-  useEffect(() => {
-    const worker = new Worker('/responsiveness-worker.js');
-    workerRef.current = worker;
-
-    // 设置消息监听器，等待来自 Worker 的“主线程已空闲”信号
-    worker.onmessage = (event) => {
-      if (event.data === 'MAIN_THREAD_IS_FREE') {
-        setIsLoading(false);
-      }
-    };
-
-    return () => {
-      worker.terminate();
-    };
-  }, []);
 
   useEffect(() => {
     if (!scenarioId) return;  
@@ -65,13 +47,8 @@ const Lab = () => {
           Solved: SolvedComponent,
           reportData: reportDataModule.default,
         });
+        setIsLoading(false);
 
-        if (view === 'problem' && workerRef.current) {
-          workerRef.current.postMessage('CHECK_RESPONSIVENESS');
-        } else {
-          // 如果是切换到没有阻塞的 Solved 页面，我们自己关闭辉光
-          setIsLoading(false);
-        }
       } catch (error) {
         console.error(`Failed to load resources for scenario ${scenarioId}:`, error);
         setIsLoading(false)
@@ -79,7 +56,7 @@ const Lab = () => {
     };
 
     loadResources();
-  }, [scenarioId, view]);
+  }, [scenarioId]);
 
   if (!scenarioId) {
     return (

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import ReportDrawer from '../components/ReportDrawer/ReportDrawer';
 import AuditReport from '../components/AuditReport/AuditReport';
 import LabControl from '../components/LabControl/LabControl';
-
 
 const Lab = () => {
   const [searchParams] = useSearchParams();
@@ -21,6 +20,9 @@ const Lab = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // 缓存React.lazy组件，避免重复创建
+  const lazyComponentCache = useRef(new Map());
+
   useEffect(() => {
     if (!scenarioId) return;  
 
@@ -31,14 +33,29 @@ const Lab = () => {
 
     const loadResources = async () => {
       try {
-        // React.lazy 接受一个返回 Promise 的函数
-        // 这个 Promise 应该 resolve 一个包含 default export 的模块
-        const ProblemComponent = React.lazy(() => import(`../scenarios/${scenarioId}/Problem.jsx`));
-        
-        const SolvedComponent = React.lazy(() => 
-          import(`../scenarios/${scenarioId}/Solved.jsx`)
-          .catch(() => ({ default: null }))
-        );
+        // 获取或创建缓存的React.lazy组件
+        const getOrCreateLazyComponent = (componentPath, fallback = null) => {
+          const cacheKey = `${scenarioId}-${componentPath}`;
+          
+          if (lazyComponentCache.current.has(cacheKey)) {
+            return lazyComponentCache.current.get(cacheKey);
+          }
+          
+          const lazyComponent = React.lazy(() => 
+            import(`../scenarios/${scenarioId}/${componentPath}`)
+            .catch(() => {
+              // 返回一个空函数组件而不是null，避免React.lazy错误
+              return fallback || { default: () => null };
+            })
+          );
+          
+          lazyComponentCache.current.set(cacheKey, lazyComponent);
+          return lazyComponent;
+        };
+
+        // 使用缓存的组件
+        const ProblemComponent = getOrCreateLazyComponent('Problem.jsx');
+        const SolvedComponent = getOrCreateLazyComponent('Solved.jsx');
         
         const reportDataModule = await import(`../scenarios/${scenarioId}/reportData.js`);
 

@@ -37,7 +37,10 @@ const Lab = () => {
         
         const SolvedComponent = React.lazy(() => 
           import(`../scenarios/${scenarioId}/Solved.jsx`)
-          .catch(() => ({ default: null }))
+          .catch(() => {
+            // 返回一个空函数组件而不是null，避免React.lazy错误
+            return { default: () => null };
+          })
         );
         
         const reportDataModule = await import(`../scenarios/${scenarioId}/reportData.js`);

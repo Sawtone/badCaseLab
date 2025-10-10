@@ -91,8 +91,7 @@ const Lab = () => {
     }}>
       {/* 唯一的 Suspense 用于处理所有动态加载的场景组件 */}
       <Suspense fallback={<div style={{ padding: '20px', fontSize: '24px' }}>加载场景中...</div>}>
-        {view === 'problem' && resources.Problem && <resources.Problem />
-        }
+        {view === 'problem' && resources.Problem && <resources.Problem />}
         {view === 'solved' && resources.Solved && <resources.Solved />}
       </Suspense>
 

@@ -41,6 +41,10 @@ body {
     flex-shrink: 0;
     width: 280px;
     margin: 0 20px;
+    /* 设置粘性定位，距离顶部 75px（55px顶栏高度 + 20px间距） */
+    position: sticky; 
+    top: 75px;
+    align-self: flex-start;
   }
   .left-sidebar .profile-card, .right-sidebar .module {
     background-color: #fff;
